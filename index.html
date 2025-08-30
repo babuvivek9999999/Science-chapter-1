@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>विज्ञान टेस्ट सीरीज</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e0f2f7;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .ad-container {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            min-height: 50px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        .name-input-section, .quiz-section, .result-section {
+            display: none; /* Hide sections by default */
+        }
+        .name-input-section.active, .quiz-section.active, .result-section.active {
+            display: block;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .input-group input[type="text"] {
+            width: calc(100% - 40px);
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            max-width: 400px;
+        }
+        .start-btn {
+            display: block;
+            width: 180px;
+            padding: 12px 0;
+            margin: 20px auto 0;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .start-btn:hover {
+            background-color: #218838;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+        }
+        .question-number {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1.05em;
+        }
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            line-height: 1.5;
+            color: #343a40;
+        }
+        .options label {
+            display: flex; /* Use flexbox for alignment */
+            align-items: center; /* Vertically align items */
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            font-size: 1.1em;
+            background-color: #f8f8f8;
+        }
+        .options label:hover {
+            background-color: #e9ecef;
+            border-color: #cce5ff;
+        }
+        .options input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            /* vertical-align: middle; no need if using flexbox align-items */
+        }
+        .next-btn {
+            display: block;
+            width: 180px;
+            padding: 12px 0;
+            margin: 30px auto 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .next-btn:hover {
+            background-color: #0056b3;
+        }
+        .next-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Feedback colors */
+        .options label.correct {
+            background-color: #d4edda; /* Light green */
+            border-color: #28a745;
+        }
+        .options label.incorrect {
+            background-color: #f8d7da; /* Light red */
+            border-color: #dc3545;
+        }
+
+        .result-section {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            background-color: #e7f7ff;
+        }
+        .result-section h2 {
+            color: #007bff;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        .result-section p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .result-section p strong {
+            color: #343a40;
+        }
+        .result-section .score-detail {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .result-section .score-detail.correct-count { color: #28a745; }
+        .result-section .score-detail.incorrect-count { color: #dc3545; }
+        .result-section .score-detail.unanswered-count { color: #ffc107; }
+        .restart-btn {
+            background-color: #6c757d;
+            margin-top: 30px;
+        }
+        .restart-btn:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Ad -->
+    <div class="ad-container">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : '4b505c9273cf9161c278efee028f35e2',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/4b505c9273cf9161c278efee028f35e2/invoke.js"></script>
+    </div>
+
+    <div class="container">
+        <h1>रासायनिक अभिक्रियाएँ और समीकरण (टेस्ट)</h1>
+
+        <div id="nameInputSection" class="name-input-section active">
+            <div class="input-group">
+                <label for="userName">अपना नाम दर्ज करें:</label>
+                <input type="text" id="userName" placeholder="अपना नाम यहाँ लिखें" required>
+            </div>
+            <button id="startButton" class="start-btn">क्विज शुरू करें</button>
+        </div>
+
+        <div id="quizSection" class="quiz-section">
+            <div class="question-block">
+                <span class="question-number" id="currentQuestionNumber"></span>
+                <p class="question-text" id="questionText"></p>
+                <form id="quizForm">
+                    <div class="options" id="optionsContainer">
+                        <!-- Options will be loaded here by JavaScript -->
+                    </div>
+                    <button type="button" id="nextButton" class="next-btn">अगला प्रश्न</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="resultSection" class="result-section">
+            <h2>क्विज परिणाम</h2>
+            <p><strong>परीक्षार्थी:</strong> <span id="displayUserName"></span></p>
+            <p class="score-detail correct-count">सही उत्तर: <span id="correctCount">0</span></p>
+            <p class="score-detail incorrect-count">गलत उत्तर: <span id="incorrectCount">0</span></p>
+            <p class="score-detail unanswered-count">छोड़े गए प्रश्न: <span id="unansweredCount">0</span></p>
+            <button id="restartButton" class="next-btn restart-btn">पुनः प्रयास करें</button>
+        </div>
+    </div>
+
+    <!-- Bottom Ad -->
+    <div class="ad-container">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : '4b505c9273cf9161c278efee028f35e2',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/4b505c9273cf9161c278efee028f35e2/invoke.js"></script>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "मैग्नीशियम रिबन को हवा में जलाने से पहले साफ क्यों किया जाता है?",
+                options: ["A) ताकि अभिक्रिया तेजी से हो सके", "B) ताकि उसकी चमक बढ़ाई जा सके", "C) मैग्नीशियम ऑक्साइड की परत हटाने के लिए", "D) ताकि वह पूरी तरह से जल जाए"],
+                answer: "C"
+            },
+            {
+                q: "श्वसन किस प्रकार की रासायनिक अभिक्रिया है?",
+                options: ["A) संयोजन अभिक्रिया", "B) वियोजन अभिक्रिया", "C) ऊष्माक्षेपी अभिक्रिया", "D) ऊष्माशोषी अभिक्रिया"],
+                answer: "C"
+            },
+            {
+                q: "Fe₂O₃ + 2Al → Al₂O₃ + 2Fe किस प्रकार की अभिक्रिया है?",
+                options: ["A) संयोजन अभिक्रिया", "B) द्वि-विस्थापन अभिक्रिया", "C) वियोजन अभिक्रिया", "D) विस्थापन अभिक्रिया"],
+                answer: "D"
+            },
+            {
+                q: "जब लेड नाइट्रेट को पोटेशियम आयोडाइड के साथ अभिकृत किया जाता है, तो किस रंग का अवक्षेप बनता है?",
+                options: ["A) सफेद", "B) पीला", "C) नीला", "D) लाल"],
+                answer: "B"
+            },
+            {
+                q: "निम्नलिखित में से कौन एक ऊष्माक्षेपी अभिक्रिया का उदाहरण है?",
+                options: ["A) जल का वाष्पीकरण", "B) श्वसन", "C) प्रकाश संश्लेषण", "D) बर्फ का पिघलना"],
+                answer: "B"
+            },
+            {
+                q: "अपघटन अभिक्रिया के लिए ऊर्जा की आवश्यकता होती है। यह ऊर्जा किस रूप में हो सकती है?",
+                options: ["A) ऊष्मा", "B) प्रकाश", "C) विद्युत", "D) उपरोक्त सभी"],
+                answer: "D"
+            },
+            {
+                q: "जल का विद्युत अपघटन किस प्रकार की अभिक्रिया है?",
+                options: ["A) संयोजन अभिक्रिया", "B) वियोजन अभिक्रिया", "C) विस्थापन अभिक्रिया", "D) द्वि-विस्थापन अभिक्रिया"],
+                answer: "B"
+            },
+            {
+                q: "चिप्स के पैकेट में विकृतगंधिता को रोकने के लिए कौन सी गैस भरी जाती है?",
+                options: ["A) ऑक्सीजन", "B) हाइड्रोजन", "C) नाइट्रोजन", "D) कार्बन डाइऑक्साइड"],
+                answer: "C"
+            },
+            {
+                q: "CuO + H₂ → Cu + H₂O में किस पदार्थ का ऑक्सीकरण हो रहा है?",
+                options: ["A) CuO", "B) H₂", "C) Cu", "D) H₂O"],
+                answer: "B"
+            },
+            {
+                q: "जंग लगना किस प्रकार की अभिक्रिया है?",
+                options: ["A) संयोजन अभिक्रिया", "B) अपघटन अभिक्रिया", "C) ऑक्सीकरण अभिक्रिया", "D) विस्थापन अभिक्रिया"],
+                answer: "C"
+            },
+            {
+                q: "रासायनिक अभिक्रिया में भाग लेने वाले पदार्थ क्या कहलाते हैं?",
+                options: ["A) उत्पाद", "B) अभिकारक", "C) उत्प्रेरक", "D) मिश्रण"],
+                answer: "B"
+            },
+            {
+                q: "जिस अभिक्रिया में ऊष्मा उत्सर्जित होती है, उसे क्या कहते हैं?",
+                options: ["A) ऊष्माशोषी अभिक्रिया", "B) ऊष्माक्षेपी अभिक्रिया", "C) अपघटन अभिक्रिया", "D) विस्थापन अभिक्रिया"],
+                answer: "B"
+            },
+            {
+                q: "सिल्वर क्लोराइड का रंग कैसा होता है?",
+                options: ["A) सफेद", "B) पीला", "C) भूरा", "D) हरा"],
+                answer: "A"
+            },
+            {
+                q: "CaCO₃(s) → CaO(s) + CO₂(g) किस प्रकार की अभिक्रिया है?",
+                options: ["A) संयोजन अभिक्रिया", "B) वियोजन अभिक्रिया", "C) विस्थापन अभिक्रिया", "D) द्वि-विस्थापन अभिक्रिया"],
+                answer: "B"
+            },
+            {
+                q: "Fe + CuSO₄ → FeSO₄ + Cu, यह किस प्रकार की अभिक्रिया है?",
+                options: ["A) संयोजन", "B) अपघटन", "C) विस्थापन", "D) द्वि-विस्थापन"],
+                answer: "C"
+            },
+            {
+                q: "सिल्वर ब्रोमाइड का उपयोग किसमें होता है?",
+                options: ["A) श्वेत-श्याम फोटोग्राफी", "B) रंगीन फोटोग्राफी", "C) पेंट", "D) दवाएं"],
+                answer: "A"
+            },
+            {
+                q: "ऑक्सीकरण वह प्रक्रिया है जिसमें _______ होता है।",
+                options: ["A) ऑक्सीजन का योग", "B) हाइड्रोजन का ह्रास", "C) इलेक्ट्रॉनों का ह्रास", "D) उपरोक्त सभी"],
+                answer: "D"
+            },
+            {
+                q: "अपचयन वह प्रक्रिया है जिसमें _______ होता है।",
+                options: ["A) ऑक्सीजन का ह्रास", "B) हाइड्रोजन का योग", "C) इलेक्ट्रॉनों का योग", "D) उपरोक्त सभी"],
+                answer: "D"
+            },
+            {
+                q: "जब कोई धातु अम्ल के साथ अभिक्रिया करती है, तो कौन सी गैस निकलती है?",
+                options: ["A) ऑक्सीजन", "B) हाइड्रोजन", "C) कार्बन डाइऑक्साइड", "D) नाइट्रोजन"],
+                answer: "B"
+            },
+            {
+                q: "संक्षारण किसका उदाहरण है?",
+                options: ["A) ऑक्सीकरण", "B) अपचयन", "C) रेडॉक्स अभिक्रिया", "D) वियोजन"],
+                answer: "C" // संक्षारण ऑक्सीकरण का एक विशिष्ट प्रकार है, लेकिन यह अक्सर रेडॉक्स अभिक्रिया के संदर्भ में होता है।
+            },
+            {
+                q: "बिना बुझा चूना (क्विक लाइम) का रासायनिक सूत्र क्या है?",
+                options: ["A) CaCO₃", "B) Ca(OH)₂", "C) CaO", "D) HCl"],
+                answer: "C"
+            },
+            {
+                q: "बुझा हुआ चूना (स्लेक्ड लाइम) का रासायनिक सूत्र क्या है?",
+                options: ["A) CaCO₃", "B) Ca(OH)₂", "C) CaO", "D) CO₂"],
+                answer: "B"
+            },
+            {
+                q: "FeSO₄ . 7H₂O को गर्म करने पर किस प्रकार की अभिक्रिया होती है?",
+                options: ["A) संयोजन", "B) वियोजन (अपघटन)", "C) विस्थापन", "D) द्वि-विस्थापन"],
+                answer: "B"
+            },
+            {
+                q: "विद्युत अपघटन में, ऑक्सीजन गैस किस इलेक्ट्रोड पर जमा होती है?",
+                options: ["A) एनोड", "B) कैथोड", "C) दोनों पर", "D) किसी पर नहीं"],
+                answer: "A"
+            },
+            {
+                q: "निम्नलिखित में से कौन सा पदार्थ प्रकाश की उपस्थिति में अपघटित होता है?",
+                options: ["A) NaCl", "B) AgNO₃", "C) AgCl", "D) KCl"],
+                answer: "C"
+            },
+            {
+                q: "लौह चूर्ण पर तनु हाइड्रोक्लोरिक अम्ल डालने से क्या होता है?",
+                options: ["A) हाइड्रोजन गैस एवं आयरन क्लोराइड बनता है", "B) क्लोरीन गैस एवं आयरन हाइड्रॉक्साइड बनता है", "C) कोई अभिक्रिया नहीं होती", "D) आयरन ऑक्साइड एवं जल बनता है"],
+                answer: "A"
+            },
+            {
+                q: "रासायनिक समीकरण को संतुलित करना किस नियम पर आधारित है?",
+                options: ["A) ऊर्जा संरक्षण का नियम", "B) द्रव्यमान संरक्षण का नियम", "C) स्थिर अनुपात का नियम", "D) गुणित अनुपात का नियम"],
+                answer: "B"
+            },
+            {
+                q: "तेल और वसायुक्त खाद्य पदार्थों को नाइट्रोजन से क्यों भरते हैं?",
+                options: ["A) उन्हें ताजा रखने के लिए", "B) उन्हें रंगीन बनाने के लिए", "C) उन्हें विकृतगंधिता से बचाने के लिए", "D) उन्हें और स्वादिष्ट बनाने के लिए"],
+                answer: "C"
+            },
+            {
+                q: "निम्नलिखित में से कौन सा पदार्थ गर्म करने पर विघटित नहीं होता?",
+                options: ["A) CaCO₃", "B) Pb(NO₃)₂", "C) AgCl", "D) NaCl"],
+                answer: "D"
+            },
+            {
+                q: "Fe₂O₃ + C → Fe + CO में, कार्बन का क्या हो रहा है?",
+                options: ["A) ऑक्सीकरण", "B) अपचयन", "C) न तो ऑक्सीकरण न ही अपचयन", "D) विस्थापन"],
+                answer: "A"
+            },
+            {
+                q: "एक पदार्थ 'X' का उपयोग सफेदी के लिए होता है। 'X' है:",
+                options: ["A) CaO", "B) Ca(OH)₂", "C) CaCO₃", "D) HCl"],
+                answer: "A"
+            },
+            {
+                q: "निम्नलिखित में से कौन सी अभिक्रिया ऊष्माक्षेपी नहीं है?",
+                options: ["A) प्राकृतिक गैस का दहन", "B) श्वसन", "C) बिना बुझे चूने के साथ जल की अभिक्रिया", "D) सिल्वर क्लोराइड का प्रकाश में अपघटन"],
+                answer: "D"
+            },
+            {
+                q: "जब लोहे की कील को कॉपर सल्फेट के विलयन में डुबोया जाता है, तो विलयन का रंग बदल जाता है। यह किस प्रकार की अभिक्रिया है?",
+                options: ["A) संयोजन", "B) अपघटन", "C) विस्थापन", "D) द्वि-विस्थापन"],
+                answer: "C"
+            },
+            {
+                q: "श्वेत-श्याम फोटोग्राफी में प्रयुक्त होने वाली अभिक्रिया है:",
+                options: ["A) 2AgBr(s) → 2Ag(s) + Br₂(g)", "B) 2H₂O(l) → 2H₂(g) + O₂(g)", "C) CaCO₃(s) → CaO(s) + CO₂(g)", "D) N₂(g) + 3H₂(g) → 2NH₃(g)"],
+                answer: "A"
+            },
+            {
+                q: "उपचयन-अपचयन अभिक्रिया को और किस नाम से जाना जाता है?",
+                options: ["A) वियोजन अभिक्रिया", "B) रेडॉक्स अभिक्रिया", "C) संयोजन अभिक्रिया", "D) विस्थापन अभिक्रिया"],
+                answer: "B"
+            },
+            {
+                q: "फेरस सल्फेट क्रिस्टल का रंग कैसा होता है?",
+                options: ["A) सफेद", "B) नीला", "C) हरा", "D) लाल"],
+                answer: "C"
+            },
+            {
+                q: "निम्नलिखित में से कौन एक भौतिक परिवर्तन है?",
+                options: ["A) मोमबत्ती का जलना", "B) भोजन का पाचन", "C) जल का उबलना", "D) लोहे पर जंग लगना"],
+                answer: "C"
+            },
+            {
+                q: "संतुलित रासायनिक समीकरण में अभिकारकों और उत्पादों में परमाणुओं की संख्या कैसी होती है?",
+                options: ["A) असमान", "B) समान", "C) केवल अभिकारकों में अधिक", "D) केवल उत्पादों में अधिक"],
+                answer: "B"
+            },
+            {
+                q: "अवक्षेपण अभिक्रियाएँ क्या उत्पन्न करती हैं?",
+                options: ["A) जल में घुलनशील उत्पाद", "B) जल में अघुलनशील अवक्षेप", "C) गैसें", "D) अम्ल"],
+                answer: "B"
+            },
+            {
+                q: "जिस अभिक्रिया में अभिकारक आयनों का आदान-प्रदान करते हैं, उसे क्या कहते हैं?",
+                options: ["A) संयोजन अभिक्रिया", "B) वियोजन अभिक्रिया", "C) विस्थापन अभिक्रिया", "D) द्वि-विस्थापन अभिक्रिया"],
+                answer: "D"
+            },
+            {
+                q: "FeSO₄ . 7H₂O को गर्म करने पर गंधक डाइऑक्साइड (SO₂) और गंधक ट्राइऑक्साइड (SO₃) गैसें निकलती हैं। यह किस प्रकार की अभिक्रिया है?",
+                options: ["A) ऑक्सीकरण", "B) अपचयन", "C) ऊष्मीय अपघटन", "D) विस्थापन"],
+                answer: "C"
+            },
+            {
+                q: "एक धातु को उसके लवण विलयन से दूसरी धातु विस्थापित करती है। यह किस पर निर्भर करता है?",
+                options: ["A) धातुओं की क्रियाशीलता", "B) धातुओं के रंग", "C) विलयन की सांद्रता", "D) तापमान"],
+                answer: "A"
+            },
+            {
+                q: "जब हाइड्रोजन गैस कॉपर ऑक्साइड के ऊपर से गुजरती है, तो क्या होता है?",
+                options: ["A) कॉपर ऑक्सीकृत होता है", "B) हाइड्रोजन अपचयित होता है", "C) कॉपर ऑक्साइड अपचयित होता है", "D) कोई अभिक्रिया नहीं होती"],
+                answer: "C"
+            },
+            {
+                q: "विकृतगंधिता क्या है?",
+                options: ["A) भोजन का मीठा हो जाना", "B) भोजन का खट्टा हो जाना", "C) वसायुक्त और तैलीय खाद्य पदार्थों का ऑक्सीकृत होकर गंध और स्वाद बदलना", "D) भोजन का रंग बदलना"],
+                answer: "C"
+            },
+            {
+                q: "निम्नलिखित में से कौन सी एक धीमी अभिक्रिया है?",
+                options: ["A) अम्ल और क्षार की अभिक्रिया", "B) सोडियम का जल से अभिक्रिया", "C) जंग लगना", "D) दहन अभिक्रिया"],
+                answer: "C"
+            },
+            {
+                q: "जब लेड नाइट्रेट को गर्म किया जाता है, तो कौन सी भूरे रंग की गैस निकलती है?",
+                options: ["A) NO", "B) N₂O", "C) NO₂", "D) N₂"],
+                answer: "C"
+            },
+            {
+                q: "CaO + H₂O → Ca(OH)₂ अभिक्रिया का प्रकार क्या है?",
+                options: ["A) अपघटन", "B) संयोजन", "C) विस्थापन", "D) रेडॉक्स"],
+                answer: "B"
+            },
+            {
+                q: "आग बुझाने वाले यंत्रों में किस प्रकार की अभिक्रिया का उपयोग किया जाता है?",
+                options: ["A) ऊष्माक्षेपी", "B) ऊष्माशोषी", "C) दहन", "D) अपघटन"],
+                answer: "D"
+            },
+            {
+                q: "सफेद रंग का पदार्थ जो गर्म करने पर भूरे रंग में बदल जाता है और ठंडा करने पर फिर से सफेद हो जाता है?",
+                options: ["A) ZnO", "B) PbO", "C) CuO", "D) Fe₂O₃"],
+                answer: "A"
+            },
+            {
+                q: "निम्नलिखित में से कौन सा रासायनिक परिवर्तन नहीं है?",
+                options: ["A) दूध का दही जमना", "B) भोजन का पचना", "C) जल का जमना", "D) लकड़ी का जलना"],
+                answer: "C"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswersCount = 0;
+        let incorrectAnswersCount = 0;
+        let unansweredQuestionsCount = 0;
+        let userName = "";
+        let hasAnsweredCurrentQuestion = false; // Flag to track if the current question has been answered
+
+        // DOM elements
+        const nameInputSection = document.getElementById('nameInputSection');
+        const quizSection = document.getElementById('quizSection');
+        const resultSection = document.getElementById('resultSection');
+        const userNameInput = document.getElementById('userName');
+        const startButton = document.getElementById('startButton');
+        const currentQuestionNumber = document.getElementById('currentQuestionNumber');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const nextButton = document.getElementById('nextButton');
+        const displayUserName = document.getElementById('displayUserName');
+        const correctCount = document.getElementById('correctCount');
+        const incorrectCount = document.getElementById('incorrectCount');
+        const unansweredCount = document.getElementById('unansweredCount');
+        const restartButton = document.getElementById('restartButton');
+
+        // Event Listeners
+        startButton.addEventListener('click', startQuiz);
+        nextButton.addEventListener('click', moveToNextQuestion);
+        restartButton.addEventListener('click', resetQuiz);
+
+        function startQuiz() {
+            userName = userNameInput.value.trim();
+            if (userName === "") {
+                alert("कृपया क्विज शुरू करने से पहले अपना नाम दर्ज करें।");
+                return;
+            }
+
+            nameInputSection.classList.remove('active');
+            quizSection.classList.add('active');
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            hasAnsweredCurrentQuestion = false;
+            // nextButton.disabled = true; // No longer disable next button, allowing skips
+
+            if (currentQuestionIndex < questions.length) {
+                const qData = questions[currentQuestionIndex];
+                currentQuestionNumber.textContent = `प्रश्न ${currentQuestionIndex + 1} / ${questions.length}`;
+                questionText.textContent = qData.q;
+                optionsContainer.innerHTML = ''; // Clear previous options
+
+                qData.options.forEach((option, index) => {
+                    const optionId = `q${currentQuestionIndex}-option${index}`; // Unique ID for input
+                    const label = document.createElement('label');
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `q${currentQuestionIndex}`;
+                    input.value = option.charAt(0); // Assuming options are A), B), C), D)
+                    input.id = optionId; // Assign ID to input
+
+                    label.htmlFor = optionId; // Link label to input via 'for' attribute
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(option));
+
+                    // Add an event listener to the LABEL for selection and feedback
+                    label.addEventListener('click', (e) => {
+                        // Ensure click on label also selects the radio button
+                        if (e.target.type !== 'radio') {
+                            input.checked = true;
+                        }
+                        handleAnswer(input, qData.answer);
+                    });
+
+                    // Add event listener directly to input for consistency, though label's click will trigger it
+                    input.addEventListener('change', () => handleAnswer(input, qData.answer));
+
+
+                    optionsContainer.appendChild(label);
+                });
+            } else {
+                displayResults();
+            }
+        }
+
+        function handleAnswer(selectedInput, correctAnswer) {
+            if (hasAnsweredCurrentQuestion) return; // Prevent changing answer or re-calculating score for the same question
+
+            hasAnsweredCurrentQuestion = true;
+            // nextButton.disabled = false; // Next button is always enabled now
+
+            const selectedLabel = selectedInput.closest('label');
+            const selectedValue = selectedInput.value;
+
+            // Mark the selected answer
+            if (selectedValue === correctAnswer) {
+                selectedLabel.classList.add('correct');
+                correctAnswersCount++;
+            } else {
+                selectedLabel.classList.add('incorrect');
+                incorrectAnswersCount++;
+                // Also highlight the correct answer
+                const allOptions = optionsContainer.querySelectorAll('input[type="radio"]');
+                allOptions.forEach(input => {
+                    if (input.value === correctAnswer) {
+                        input.closest('label').classList.add('correct');
+                    }
+                });
+            }
+
+            // Disable all radio buttons after an answer is chosen
+            optionsContainer.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.disabled = true;
+            });
+        }
+
+        function moveToNextQuestion() {
+            // If the current question was not answered (i.e., 'Next' was clicked without selecting an option)
+            if (!hasAnsweredCurrentQuestion && currentQuestionIndex < questions.length) {
+                unansweredQuestionsCount++;
+            }
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        function displayResults() {
+            quizSection.classList.remove('active');
+            resultSection.classList.add('active');
+
+            displayUserName.textContent = userName;
+            correctCount.textContent = correctAnswersCount;
+            incorrectCount.textContent = incorrectAnswersCount;
+            unansweredCount.textContent = unansweredQuestionsCount;
+        }
+
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            correctAnswersCount = 0;
+            incorrectAnswersCount = 0;
+            unansweredQuestionsCount = 0;
+            userName = "";
+            hasAnsweredCurrentQuestion = false;
+
+            userNameInput.value = ""; // Clear name input
+            resultSection.classList.remove('active');
+            nameInputSection.classList.add('active'); // Go back to name input
+        }
+
+        // Initial state: show name input section
+        nameInputSection.classList.add('active');
+    </script>
+</body>
+</html>
